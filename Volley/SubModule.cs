@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
@@ -10,14 +11,16 @@ namespace Volley
     {
         private static bool DEBUG = true;
         private static string MOD_NAME = "BannerlordVolley";
-        private static string MOD_VERSION = "1.0.0";
+        private static string MOD_VERSION = "1.1.0";
         private static string MOD_ID = $"{MOD_NAME}:{MOD_VERSION}";
         private static Dictionary<FormationClass, bool> VolleyActiveMap = new Dictionary<FormationClass, bool>();
         private static FormationClass SelectedFormation;
-        
+        private static float NoShootTimeout = 3000f;
+
         private enum ReloadPhase
         {
-            Reloading = 0,
+            Loading = 0,
+            Aiming = 1, // Only crossbomen seem to get this
             CanAttack = 2
         };
 
@@ -32,7 +35,7 @@ namespace Volley
             base.OnApplicationTick(dt);
 
             var mainAgent = Agent.Main;
-            if (Mission.Current == null || Mission.Current.CombatType != Mission.MissionCombatType.Combat || mainAgent == null)
+            if (Mission.Current == null || Mission.Current.CombatType != Mission.MissionCombatType.Combat || Mission.Current.IsFriendlyMission || mainAgent == null)
             {
                 if (VolleyActiveMap.Keys.Count() > 0)
                 {
@@ -108,13 +111,14 @@ namespace Volley
                     {
                         formation.ApplyActionOnEachUnit(agent => agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack));
                     }
+
+                    // TODO: add voice line for "Fire at will"
                 }
             }
 
-            // Get all agents and formations in our army
-            var selectedUnits = Mission.Current.Agents
-                .Where(agent => IsAgentInEnabledFormations(agent));
-            var formations = selectedUnits
+            // Get all formations in our army
+            var formations = Mission.Current.Agents
+                .Where(agent => IsAgentInEnabledFormations(agent))
                 .Select(x => x.Formation).Distinct();
 
             foreach (var formation in formations)
@@ -126,28 +130,52 @@ namespace Volley
                 }
                 else
                 {
-                    // If a formation has any units in reload phase, pause their attacking to sync volley waves
-                    var hasUnitsReloading = formation.HasUnitsWithCondition(agent => agent.WieldedWeapon.ReloadPhase == (short)ReloadPhase.Reloading);
-                    if (hasUnitsReloading)
+                    var unitIndices = formation.CollectUnitIndices();
+
+                    foreach (var i in unitIndices)
                     {
-                        formation.ApplyActionOnEachUnit(agent => {
-                            // But allow those who need to reload to do so (only needed for crossbows, as they have a reload time whereas bows do not)
-                            if (agent.WieldedWeapon.ReloadPhase != (short)ReloadPhase.Reloading) {
-                                agent.SetAgentFlags(agent.GetAgentFlags() & ~AgentFlag.CanAttack);
-                            }
-                            else
-                            {
-                                agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack);
-                            }
-                        });
+                        var agent = formation.GetUnitWithIndex(i);
+                        // Probably dead, not sure
+                        if (agent == null)
+                        {
+                            continue;
+                        }
                         
-                    }
-                    else
-                    {
-                        formation.ApplyActionOnEachUnit(agent => agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack));
+                        // Testing only 95% of units, since some seem to never be able to reload
+                        // var otherAgentsInFormation = Mission.Current.Agents.Where(x => unitIndices.Contains(x.Index) && x.Index != i && WeaponClassesMatch(agent, x));
+                        // var mostAgentsAreReloading = otherAgentsInFormation.Most(otherAgent => otherAgent.WieldedWeapon.ReloadPhase != (short)ReloadPhase.CanAttack, .95);
+                        
+                        // If a formation has any other units in reload phase, pause their attacking to sync volley waves
+                        var agentWeaponClassIsReloading = formation.HasUnitsWithCondition(otherAgent => otherAgent.WieldedWeapon.ReloadPhase == (short) ReloadPhase.Loading && WeaponClassesMatch(agent, otherAgent));
+
+                        // Pause this unit if he is ready to attack but his comrades are not
+                        if ((agentWeaponClassIsReloading && agent.WieldedWeapon.ReloadPhase == (short)ReloadPhase.CanAttack)) //  || (agent.LastRangedAttackTime > agent.WieldedWeapon.CurrentUsageItem
+                        {
+                            // TODO: Don't pause this unit if he hasn't fired in a while (3x reload time. find sweet spot)
+                            //  if (agent.LastRangedAttackTime > 60)
+                            //  {
+                            //      agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack);
+                            //      continue;
+                            //  }
+                            agent.SetAgentFlags(agent.GetAgentFlags() & ~AgentFlag.CanAttack);
+                        }
+                        else
+                        {
+                            agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack);
+                        }
                     }
                 }
             }
+        }
+
+        WeaponClass? GetAgentWeaponClass(Agent agent)
+        {
+            return agent?.WieldedWeapon.CurrentUsageItem?.WeaponClass;
+        }
+
+        bool WeaponClassesMatch(Agent a1, Agent a2)
+        {
+            return a1 != null && a2 != null && GetAgentWeaponClass(a1) == GetAgentWeaponClass(a2);
         }
 
         bool IsFormationUnderMeleeAttack(Formation formation)
@@ -169,15 +197,20 @@ namespace Volley
         {
             return agent.IsHuman && agent.Origin.IsUnderPlayersCommand;
         }
-
-
-        //bool AnyWithJitter<T>(IEnumerable<T> array, Func<T, bool> predicate, double percent)
-        //{
-        //    var total = array.Count();
-        //    var passing = array.Where(predicate).Count();
-
-        //    return ((double) passing / total) > percent;
-        //}
     }
+}
 
+namespace CustomExtensions
+{
+    public static class EnumerableExtension
+    {
+        public static bool Most<T>(this IEnumerable<T> array, Func<T, bool> predicate, double percent)
+        {
+            var total = array.Count();
+            var passing = array.Where(predicate).Count();
+
+            var result = ((double)passing / total) >= percent;
+            return result;
+        }
+    }
 }
