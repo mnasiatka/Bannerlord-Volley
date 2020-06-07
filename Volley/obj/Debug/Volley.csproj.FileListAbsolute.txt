@@ -6,3 +6,4 @@ C:\Users\me\Projects\Volley\Volley\obj\Debug\Volley.pdb
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.csproj.CoreCompileInputs.cache
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.dll
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.pdb
+C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.csprojAssemblyReference.cache
