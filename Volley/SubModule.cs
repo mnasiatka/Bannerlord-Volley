@@ -106,6 +106,7 @@ namespace Volley
                     {
                         formation.ApplyActionOnEachUnit(agent => agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack));
                     }
+                    mainAgent.MakeVoice(new SkinVoiceManager.SkinVoiceType("FireAtWill"), SkinVoiceManager.CombatVoiceNetworkPredictionType.Prediction);
                 }
             }
 
