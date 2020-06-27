@@ -17,7 +17,7 @@ namespace Volley
 
         public override void OnMissionBehaviourInitialize(Mission mission)
         {
-            if (mission.CombatType == Mission.MissionCombatType.Combat || !mission.IsFriendlyMission)
+            if (mission.CombatType == Mission.MissionCombatType.Combat && !mission.IsFriendlyMission)
             {
                 mission.AddMissionBehaviour(new VolleyMissionBehavior());
             }
