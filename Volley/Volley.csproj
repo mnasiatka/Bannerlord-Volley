@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="SubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VolleyMissionBehavior.cs" />
     <Content Include="Readme.txt" />
     <Content Include="SubModule.xml" />
   </ItemGroup>
