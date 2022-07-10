@@ -17,11 +17,8 @@ namespace Volley
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
         private Dictionary<FormationClass, bool> VolleyActiveMap = new Dictionary<FormationClass, bool>();
-        private Dictionary<FormationClass, int> CurrentRankByFormation = new Dictionary<FormationClass, int>();
         private Dictionary<(FormationClass, WeaponClass?), bool> FormationHasUnitsReloading = new Dictionary<(FormationClass, WeaponClass?), bool>();
         private Dictionary<FormationClass, Formation> FormationByFormationClass = new Dictionary<FormationClass, Formation>();
-
-        private Dictionary<(FormationClass, int), List<int>> ExpectedShotsByFormationAndRank = new Dictionary<(FormationClass, int), List<int>>();
         private FormationClass SelectedFormation;
 
         private Dictionary<int, FormationClass> FormationGroupKeys = new Dictionary<int, FormationClass>() {
@@ -39,35 +36,14 @@ namespace Volley
         {
         }
 
-        //public override void OnAgentShootMissile(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, int forcedMissileIndex)
-        //{
-        //    var formation = shooterAgent.Formation;
-        //    var formationIndex = formation.FormationIndex;
-        //    var formationAndRankTuple = (formationIndex, (shooterAgent as IFormationUnit).FormationRankIndex);
-        //    ExpectedShotsByFormationAndRank[formationAndRankTuple].Remove(shooterAgent.Index);
-
-        //    if (FormationRankHasFired(formationIndex))
-        //    {
-        //        IncrementFormationRank(shooterAgent.Formation);
-        //        SetNextFormationRankUnits(shooterAgent.Formation);
-        //    }
-        //}
-
         public override void OnMissionTick(float dt)
         {
-            if (Agent.Main == null || CurrentRankByFormation == null)
+            if (Agent.Main == null)
             {
                 return;
             }
             RunVolleyLogic();
         }
-
-        void RunProtectFlankFormation()
-        {
-
-        }
-
-        void RunReverseSkeinFormation() { }
 
         void RunVolleyLogic()
         {
@@ -87,7 +63,6 @@ namespace Volley
             if (!keyExists)
             {
                 VolleyActiveMap[SelectedFormation] = false;
-                CurrentRankByFormation[SelectedFormation] = 0;
             }
 
             var allFormations = Mission.Current.PlayerTeam.Formations;
@@ -107,46 +82,23 @@ namespace Volley
                     {
                         formation.ApplyActionOnEachUnit(agent => SetUnitAttack(agent));
                     }
-                    ResetFormationRank(SelectedFormation);
                     Yell(mainAgent, SkinVoiceManager.VoiceType.FireAtWill);
                 }
                 else
                 {
-                    ResetFormationRank(SelectedFormation);
                     var formation = allFormations.SingleOrDefault(x => x.FormationIndex == SelectedFormation);
-                    //ExpectedShotsByFormationAndRank[(SelectedFormation, CurrentRankByFormation[SelectedFormation])] = formation.CollectUnitIndices().ToList();
-                    Yell(mainAgent, SkinVoiceManager.VoiceType.HorseRally);
+                    Yell(mainAgent, SkinVoiceManager.VoiceType.Focus);
                 }
             }
 
             var agents = Mission.Current.PlayerTeam.ActiveAgents
                 .Where(agent => IsAgentInEnabledFormations(agent));
-            //.OrderBy(agent => agent.AgentDrivenProperties.ReloadSpeed);
-
-            //foreach (var formation in allFormations.Where(x => VolleyActiveMap.TryGetValue(x.FormationIndex, out var isActive) && isActive))
-            //{
-            //    var formationIndex = formation.FormationIndex;
-            //    var rankHasUnitThatCanAttack = formation.HasUnitsWithCondition(agent =>
-            //        UnitInCurrentRank(agent) &&
-            //        UnitCanShoot(agent) &&
-            //        AgentHasVisibleTarget(agent)
-            //    );
-
-            //    //if (FormationRankHasFired(formationIndex))
-            //    if (!rankHasUnitThatCanAttack)
-            //    {
-            //        IncrementFormationRank(formation);
-            //        //SetNextFormationRankUnits(formation);
-            //        // ExpectedShotsByFormationAndRank[(formationIndex, CurrentRankByFormation[formationIndex])] = formation.CollectUnitIndices().ToList();
-            //    }
-            //}
+            
             foreach (var agent in agents)
             {
                 FormationHasUnitsReloading[(agent.Formation.FormationIndex, GetAgentWeaponClass(agent))] = false;
                 FormationByFormationClass[agent.Formation.FormationIndex] = agent.Formation;
             }
-
-            
 
             foreach (var agent in agents)
             {
@@ -169,23 +121,6 @@ namespace Volley
                     {
                         SetUnitAttack(agent);
                     }
-                    //FormationHasUnitsReloading[(agent.Formation.FormationIndex, GetAgentWeaponClass(agent))] = false;
-
-
-                    //var agentWeaponClassIsReloading = agent.Formation.HasUnitsWithCondition(otherAgent =>
-                    //    UnitInCurrentRank(otherAgent) &&
-                    //    WeaponClassesMatch(agent, otherAgent) &&
-                    //    !UnitCanShoot(otherAgent)
-                    //);
-
-                    //if ((agentWeaponClassIsReloading && UnitCanShoot(agent)) || !UnitInCurrentRank(agent))
-                    //{
-                    //    SetUnitNoAttack(agent);
-                    //}
-                    //else
-                    //{
-                    //    SetUnitAttack(agent);
-                    //}
                 }
             }
 
@@ -204,43 +139,6 @@ namespace Volley
             agent.MakeVoice(voiceType, SkinVoiceManager.CombatVoiceNetworkPredictionType.Prediction);
         }
 
-        void ResetFormationRank(FormationClass formationIndex)
-        {
-            CurrentRankByFormation[formationIndex] = 0;
-        }
-        
-        void IncrementFormationRank(Formation formation)
-        {
-            var maxRank = (formation.GetFirstUnit() as IFormationUnit).Formation.RankCount;
-            CurrentRankByFormation[formation.FormationIndex]++;
-            if (CurrentRankByFormation[formation.FormationIndex] >= maxRank)
-            {
-                ResetFormationRank(SelectedFormation);
-            }
-        }
-
-        void SetNextFormationRankUnits(Formation formation)
-        {
-            ExpectedShotsByFormationAndRank[(formation.FormationIndex, CurrentRankByFormation[formation.FormationIndex])] = new List<int>();
-            formation.ApplyActionOnEachUnit(agent => {
-                if (AgentHasVisibleTarget(agent))
-                {
-                    ExpectedShotsByFormationAndRank[(formation.FormationIndex, CurrentRankByFormation[formation.FormationIndex])].Add(agent.Index);
-                }
-            });
-        }
-
-        bool FormationRankHasFired(FormationClass formationIndex)
-        {
-            return ExpectedShotsByFormationAndRank.TryGetValue((formationIndex, CurrentRankByFormation[formationIndex]), out var currentExpectedList) && currentExpectedList.IsEmpty();
-        }
-
-        bool AgentHasVisibleTarget(Agent agent)
-        {
-            var visibilityState = agent.GetLastTargetVisibilityState();
-            return visibilityState == AITargetVisibilityState.TargetIsClear;
-        }
-
         void SetUnitAttack(Agent agent)
         {
             agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanAttack);
@@ -251,11 +149,6 @@ namespace Volley
             agent.SetAgentFlags(agent.GetAgentFlags() & ~AgentFlag.CanAttack);
         }
 
-        bool UnitInCurrentRank(Agent agent)
-        {
-            return ReleaseByRank ? (agent as IFormationUnit).FormationRankIndex == CurrentRankByFormation[agent.Formation.FormationIndex] : true;
-        }
-
         bool UnitCanShoot(Agent agent)
         {
             return !agent.WieldedWeapon.IsReloading; // || agent.WieldedWeapon.ReloadPhase == agent.WieldedWeapon.ReloadPhaseCount;
@@ -264,11 +157,6 @@ namespace Volley
         WeaponClass? GetAgentWeaponClass(Agent agent)
         {
             return agent?.WieldedWeapon.CurrentUsageItem?.WeaponClass;
-        }
-
-        bool WeaponClassesMatch(Agent a1, Agent a2)
-        {
-            return a1 != null && a2 != null && GetAgentWeaponClass(a1) == GetAgentWeaponClass(a2);
         }
 
         bool IsFormationUnderMeleeAttack(FormationClass formationClass)
@@ -289,7 +177,6 @@ namespace Volley
 
         bool IsAgentUnderPlayer(Agent agent)
         {
-            // agent.Origin.IsUnderPlayersCommand doesn't exist for NPCs in towns apparently
             try
             {
                 return agent != null && agent.IsHuman && agent.Origin.IsUnderPlayersCommand;

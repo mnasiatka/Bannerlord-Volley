@@ -5,6 +5,6 @@ C:\Users\me\Projects\Volley\Volley\obj\Release\Volley.pdb
 C:\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Volley\bin\Win64_Shipping_Client\Volley.dll
 C:\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Volley\bin\Win64_Shipping_Client\Volley.pdb
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Release\Volley.csproj.CoreCompileInputs.cache
-C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Release\Volley.csproj.CopyComplete
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Release\Volley.dll
 C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Release\Volley.pdb
+C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Release\Volley.csprojAssemblyReference.cache

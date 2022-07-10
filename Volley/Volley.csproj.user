@@ -4,6 +4,9 @@
     <StartArguments>/singleplayer _MODULES_%2aNative%2aSandBoxCore%2aSandbox%2aCustomBattle%2aStoryMode%2aVolley%2a_MODULES_</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <StartArguments>/singleplayer _MODULES_%2aBannerlord.Harmony%2aBannerlord.ButterLib%2aNative%2aSandBoxCore%2aSandbox%2aCustomBattle%2aStoryMode%2aAdonnaysTroopChanger%2aFreelancer%2aAlternatingMainMenuModule%2aBannerPaste%2aDistinguishedService%2aRealisticBattleAiModule%2aRealisticBattleCombatModule%2aCharacterReload%2aConsiderMyKingdom%2aRealHorses%2aXorberaxCutThroughEveryone%2aBattleSize%2aVolley%2aOverhead Shieldwall%2aUseYourArmyToBuildImprovements%2a_MODULES_</StartArguments>
+    <StartArguments>/singleplayer _MODULES_%2aBannerlord.Harmony%2aBannerlord.ButterLib%2aNative%2aSandBoxCore%2aSandbox%2aCustomBattle%2aStoryMode%2aVolley%2a_MODULES_</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBox\bin\Win64_Shipping_Client\;C:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\StoryMode\bin\Win64_Shipping_Client\;C:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBoxCore\bin\Win64_Shipping_Client\;C:\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Native\bin\Win64_Shipping_Client\</ReferencePath>
   </PropertyGroup>
 </Project>
