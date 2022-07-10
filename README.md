@@ -1,2 +1,6 @@
 # Bannerlord-Volley
-Volley those missiles 
+_Nock_
+
+_Draw..._
+
+_LOOSE!_
