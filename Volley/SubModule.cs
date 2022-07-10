@@ -12,15 +12,16 @@ namespace Volley
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             base.OnBeforeInitialModuleScreenSetAsRoot();
-            InformationManager.DisplayMessage(new InformationMessage("Toggle Volleys with \"U\" for each formation"));
+            MessageManager.DisplayMessage("Toggle Volleys with \"U\" for each formation");
         }
 
-        public override void OnMissionBehaviourInitialize(Mission mission)
+        public override void OnMissionBehaviorInitialize(Mission mission)
         {
-            if (mission.CombatType == Mission.MissionCombatType.Combat && !mission.IsFriendlyMission)
+            if (mission.CombatType == Mission.MissionCombatType.Combat)//&& mission.IsFieldBattle)
             {
-                mission.AddMissionBehaviour(new VolleyMissionBehavior());
+                mission.AddMissionBehavior(new VolleyMissionBehavior());
             }
         }
     }
 }
+ 

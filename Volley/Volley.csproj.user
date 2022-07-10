@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>/singleplayer _MODULES_%2aNative%2aSandBoxCore%2aCustomBattle%2aSandbox%2aStoryMode%2aHideoutRoster%2aVolley%2aArrowmod%2aAttributePerLevel%2aBannerPaste%2aBearMyBanner%2aCharacterTrainer%2aCustomSpawns%2aImprovedSmithing%2aOverheadShieldwall%2aResponsiveSoldiersBoiZoi%2aUnitSort%2aVsMod_NoCompanionLimit%2aVsMod_RoyalArmoury%2a_MODULES_</StartArguments>
+    <StartArguments>/singleplayer _MODULES_%2aNative%2aSandBoxCore%2aSandbox%2aCustomBattle%2aStoryMode%2aVolley%2a_MODULES_</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <StartArguments>/singleplayer _MODULES_%2aNative%2aSandBoxCore%2aCustomBattle%2aSandbox%2aStoryMode%2aEnhancedBattleTest%2aVolley%2a_MODULES_</StartArguments>
+    <StartArguments>/singleplayer _MODULES_%2aBannerlord.Harmony%2aBannerlord.ButterLib%2aNative%2aSandBoxCore%2aSandbox%2aCustomBattle%2aStoryMode%2aAdonnaysTroopChanger%2aFreelancer%2aAlternatingMainMenuModule%2aBannerPaste%2aDistinguishedService%2aRealisticBattleAiModule%2aRealisticBattleCombatModule%2aCharacterReload%2aConsiderMyKingdom%2aRealHorses%2aXorberaxCutThroughEveryone%2aBattleSize%2aVolley%2aOverhead Shieldwall%2aUseYourArmyToBuildImprovements%2a_MODULES_</StartArguments>
   </PropertyGroup>
 </Project>
