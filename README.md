@@ -1,6 +1,9 @@
 # Bannerlord-Volley
-_Nock_
+Volley shoot mod for Mount & Blade II Bannerlord  
 
-_Draw..._
+## Environment  
+Mount & Blade II Bannerlord - v1.0.2  
+Visual Studio 2022  
 
-_LOOSE!_
+## License  
+MIT
