@@ -1,9 +1,0 @@
-C:\Users\me\Projects\Volley\Volley\obj\Debug\Volley.csproj.CoreCompileInputs.cache
-C:\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Volley\bin\Win64_Shipping_Client\Volley.dll
-C:\Users\me\Projects\Volley\Volley\obj\Debug\Volley.dll
-C:\Users\me\Projects\Volley\Volley\obj\Debug\Volley.pdb
-C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.csproj.CoreCompileInputs.cache
-C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.dll
-C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.pdb
-C:\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Volley\bin\Win64_Shipping_Client\Volley.pdb
-C:\Users\me\Projects\Bannerlord-Volley\Volley\obj\Debug\Volley.csprojAssemblyReference.cache

@@ -180,7 +180,7 @@ namespace Volley
             try
             {
                 return agent != null && agent.IsHuman && agent.Origin.IsUnderPlayersCommand;
-            } catch (Exception e)
+            } catch 
             {
                 return false;
             }
